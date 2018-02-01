@@ -14,9 +14,12 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.webkit.WebView;
 
 import org.mozilla.focus.BuildConfig;
 import org.mozilla.focus.R;
@@ -82,10 +85,10 @@ public class IntentUtils {
             return true;
         }
 
+        final String marketUri = MARKET_INTENT_URI_PACKAGE_PREFIX + intent.getPackage();
+        final Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(marketUri));
         if (intent.getPackage() != null) {
             // The url included the target package:
-            final String marketUri = MARKET_INTENT_URI_PACKAGE_PREFIX + intent.getPackage();
-            final Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(marketUri));
             marketIntent.addCategory(Intent.CATEGORY_BROWSABLE);
 
             final PackageManager packageManager = context.getPackageManager();
@@ -99,9 +102,11 @@ public class IntentUtils {
             return true;
         }
 
+        Snackbar.make(((WebView) webView), "This site try to open unsupported link", Snackbar.LENGTH_LONG).show();
+
         // If there's really no way to handle this, we just let the browser handle this URL
         // (which then shows the unsupported protocol page).
-        return false;
+        return true;
     }
 
     // We only need one param for both scenarios, hence we use just one "param" argument. If we ever
