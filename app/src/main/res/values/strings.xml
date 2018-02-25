@@ -349,4 +349,8 @@
     <string name="survey_notification_description">Shape a better product for Indonesia</string>
 
     <string name="survey_notification_url" translatable="false">https://qsurvey.mozilla.com/s3/Rocket-Existing-User-Survey&amp;sglocale=%1$s</string>
+
+    <string name="default_notification_channel_id">14913</string>
+
+
 </resources>

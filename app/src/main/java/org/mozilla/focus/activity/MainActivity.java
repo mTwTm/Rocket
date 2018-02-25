@@ -36,7 +36,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
+import com.microsoft.appcenter.distribute.Distribute;
+import com.microsoft.appcenter.push.Push;
+
 import org.mozilla.focus.R;
+import org.mozilla.focus.build.MyDistributeListener;
 import org.mozilla.focus.download.DownloadInfo;
 import org.mozilla.focus.download.DownloadInfoManager;
 import org.mozilla.focus.fragment.BrowserFragment;
@@ -45,6 +52,7 @@ import org.mozilla.focus.fragment.ListPanelDialog;
 import org.mozilla.focus.fragment.ScreenCaptureDialogFragment;
 import org.mozilla.focus.home.HomeFragment;
 import org.mozilla.focus.locale.LocaleAwareAppCompatActivity;
+import org.mozilla.focus.notification.MyPushListener;
 import org.mozilla.focus.notification.NotificationId;
 import org.mozilla.focus.notification.NotificationUtil;
 import org.mozilla.focus.permission.PermissionHandle;
@@ -105,6 +113,8 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         super.onCreate(savedInstanceState);
 
         asyncInitialize();
+
+        initAppCenter();
 
         setContentView(R.layout.activity_main);
         initViews();
@@ -211,6 +221,20 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         }
     }
 
+    private void initAppCenter() {
+        Push.setSenderId("1062658243921");
+        Push.setListener(new MyPushListener());
+        Distribute.setListener(new MyDistributeListener());
+
+        AppCenter.start(getApplication(), "e7e1f0bf-bcca-450d-b4d7-5f2b92584ae8", Analytics.class, Crashes.class, Distribute.class, Push.class);
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+    }
+
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         permissionHandler.onRestoreInstanceState(savedInstanceState);
@@ -259,6 +283,7 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
         //    getUrlInputPresenter().setView(urlInputFragment);
         //}
         super.onStart();
+        Push.isEnabled();
     }
 
     @Override
@@ -310,6 +335,8 @@ public class MainActivity extends LocaleAwareAppCompatActivity implements Fragme
 
     @Override
     protected void onNewIntent(Intent unsafeIntent) {
+        Push.checkLaunchedFromNotification(this, getIntent());
+
         final SafeIntent intent = new SafeIntent(unsafeIntent);
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             // We can't update our fragment right now because we need to wait until the activity is
