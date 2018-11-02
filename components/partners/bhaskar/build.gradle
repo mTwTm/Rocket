@@ -25,6 +25,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
 }
 
 dependencies {
@@ -35,6 +40,7 @@ dependencies {
     testImplementation "junit:junit:$Versions.junit"
     androidTestImplementation "com.android.support.test:runner:$Versions.test_runner"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${Versions.espresso}"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:${Versions.mockwebserver}"
 }
 
 afterEvaluate {
